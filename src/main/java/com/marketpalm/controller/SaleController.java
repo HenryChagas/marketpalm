@@ -18,4 +18,11 @@ public class SaleController {
     public List<Sale> listarTodas() {
         return saleService.listarVendas();
     }
+
+    // Buscar por data: GET http://localhost:8080/api/sales/data?dia=2026-05-10
+    @GetMapping("/data")
+    public List<Sale> listarPorData(@RequestParam("dia") String diaStr) {
+        java.time.LocalDate data = java.time.LocalDate.parse(diaStr);
+        return saleService.listarVendasDoDia(data);
+    }
 }
