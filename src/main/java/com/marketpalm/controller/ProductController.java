@@ -25,4 +25,10 @@ public class ProductController {
     public Product create(@RequestBody Product product) {
         return productService.salvarProduto(product);
     }
+
+    // Buscar por código de barras: GET http://localhost:8080/api/products/barcode/7891234567890
+    @GetMapping("/barcode/{barcode}")
+    public Product getByBarcode(@PathVariable String barcode) {
+        return productService.buscarPorCodigo(barcode);
+    }
 }

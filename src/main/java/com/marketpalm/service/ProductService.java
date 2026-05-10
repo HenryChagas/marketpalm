@@ -23,4 +23,9 @@ public class ProductService {
     public List<Product> listarTodos() {
         return productRepository.findAll();
     }
+
+    public Product buscarPorCodigo(String barcode) {
+        return productRepository.findByBarcode(barcode)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado com o código: " + barcode));
+    }
 }
