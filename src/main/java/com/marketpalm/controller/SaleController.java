@@ -5,6 +5,7 @@ import com.marketpalm.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -24,5 +25,12 @@ public class SaleController {
     public List<Sale> listarPorData(@RequestParam("dia") String diaStr) {
         java.time.LocalDate data = java.time.LocalDate.parse(diaStr);
         return saleService.listarVendasDoDia(data);
+    }
+
+    // Total faturado: GET http://localhost:8080/api/sales/faturamento?dia=2026-05-10
+    @GetMapping("/faturamento")
+    public BigDecimal getFaturamentoPorDia(@RequestParam("dia") String diaStr) {
+        java.time.LocalDate data = java.time.LocalDate.parse(diaStr);
+        return saleService.calcularTotalVendidoNoDia(data);
     }
 }
