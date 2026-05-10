@@ -1,6 +1,7 @@
 package com.marketpalm.controller;
 
 import com.marketpalm.model.Product;
+import com.marketpalm.model.Sale;
 import com.marketpalm.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,10 +33,11 @@ public class ProductController {
         return productService.buscarPorCodigo(barcode);
     }
 
-    // Atualizar estoque: PUT http://localhost:8080/api/products/venda/7891234567890?quantidade=1
+    // Registrar uma venda e gerar recibo: PUT http://localhost:8080/api/products/venda/7891234567890?quantidade=2
     @PutMapping("/venda/{barcode}")
-    public Product vender(@PathVariable String barcode, @RequestParam Integer quantidade) {
-        return productService.baixarEstoque(barcode, quantidade);
+    public Sale vender(@PathVariable String barcode, @RequestParam Integer quantidade) {
+        // Agora chamamos o novo método que gera o histórico de venda
+        return productService.registrarVenda(barcode, quantidade);
     }
 
     // Deletar produto: DELETE http://localhost:8080/api/products/1
