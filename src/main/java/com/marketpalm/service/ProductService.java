@@ -39,4 +39,11 @@ public class ProductService {
         product.setStock(product.getStock() - quantidade);
         return productRepository.save(product);
     }
+
+    public void deletarProduto(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new RuntimeException("Não é possível deletar. Produto não encontrado!");
+        }
+        productRepository.deleteById(id);
+    }
 }

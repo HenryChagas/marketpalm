@@ -37,4 +37,10 @@ public class ProductController {
     public Product vender(@PathVariable String barcode, @RequestParam Integer quantidade) {
         return productService.baixarEstoque(barcode, quantidade);
     }
+
+    // Deletar produto: DELETE http://localhost:8080/api/products/1
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        productService.deletarProduto(id);
+    }
 }
