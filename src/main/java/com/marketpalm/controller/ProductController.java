@@ -31,4 +31,10 @@ public class ProductController {
     public Product getByBarcode(@PathVariable String barcode) {
         return productService.buscarPorCodigo(barcode);
     }
+
+    // Atualizar estoque: PUT http://localhost:8080/api/products/venda/7891234567890?quantidade=1
+    @PutMapping("/venda/{barcode}")
+    public Product vender(@PathVariable String barcode, @RequestParam Integer quantidade) {
+        return productService.baixarEstoque(barcode, quantidade);
+    }
 }
