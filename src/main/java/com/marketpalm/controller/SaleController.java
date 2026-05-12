@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/sales")
 public class SaleController {

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController // Diz ao Spring que esta classe responde a chamadas HTTP (APIs)
 @RequestMapping("/api/products") // O "endereço" base desta API
 public class ProductController {

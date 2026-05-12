@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>MarketPalm - Totem</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #f4f4f4; }
+        .caixa { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 50px; }
+        input { padding: 10px; margin: 10px 0; width: 250px; }
+        button { padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        #resultado { margin-top: 20px; font-weight: bold; color: #333; }
+    </style>
+</head>
+<body>
+<div class="caixa">
+    <h2>MarketPalm - Totem</h2>
+    <input type="text" id="barcode" placeholder="Escaneie o código de barras">
+    <br>
+    <button onclick="realizarVenda()">Finalizar Compra</button>
+    <div id="resultado"></div>
+</div>
+
+<script>
+    async function realizarVenda() {
+        const barcode = document.getElementById('barcode').value;
+        const resDiv = document.getElementById('resultado');
+
+        try {
+            // O "fetch" é o que substitui o botão 'Send' do Postman
+            const response = await fetch(`/api/products/venda/${barcode}?quantidade=1`, {
+                method: 'PUT'
+            });
+
+            if (response.ok) {
+                const venda = await response.json();
+                resDiv.style.color = "green";
+                resDiv.innerText = `Vendido: ${venda.product.name} - Total: R$ ${venda.totalPrice}`;
+            } else {
+                resDiv.style.color = "red";
+                resDiv.innerText = "Erro: Produto não encontrado ou estoque insuficiente.";
+            }
+        } catch (err) {
+            resDiv.innerText = "Erro ao conectar com o servidor.";
+        }
+    }
+</script>
+</body>
+</html>
