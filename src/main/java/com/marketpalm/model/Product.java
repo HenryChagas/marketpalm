@@ -21,4 +21,8 @@ public class Product {
     private BigDecimal price; // Usamos BigDecimal para dinheiro (mais precisão que Double)
 
     private Integer stock;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 }
