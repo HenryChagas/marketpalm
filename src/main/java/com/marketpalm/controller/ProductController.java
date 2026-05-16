@@ -46,4 +46,10 @@ public class ProductController {
     public void delete(@PathVariable Long id) {
         productService.deletarProduto(id);
     }
+
+    // Buscar produtos por categoria: GET http://localhost:8080/api/products/categoria/1
+    @GetMapping("/categoria/{categoryId}")
+    public List<Product> listarPorCategoria(@PathVariable Long categoryId) {
+        return productService.listarPorCategoria(categoryId);
+    }
 }

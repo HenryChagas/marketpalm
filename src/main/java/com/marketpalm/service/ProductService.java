@@ -92,5 +92,11 @@ public class ProductService {
 
         // 4. Salva a venda no banco
         return saleRepository.save(venda);
+
+        }
+
+    public List<Product> listarPorCategoria(Long categoryId) {
+        return productRepository.findByCategoryId(categoryId);
     }
+
 }
