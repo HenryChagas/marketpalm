@@ -1,5 +1,6 @@
 package com.marketpalm.service;
 
+import com.marketpalm.dto.ProdutoMaisVendidoDTO;
 import com.marketpalm.dto.ResumoFinanceiroDTO;
 import com.marketpalm.model.Sale;
 import com.marketpalm.repository.SaleRepository;
@@ -47,5 +48,9 @@ public class SaleService {
         }
 
         return new ResumoFinanceiroDTO(faturamento, totalVendas, ticketMedio);
+    }
+
+    public List<ProdutoMaisVendidoDTO> obterProdutosMaisVendidos(LocalDateTime inicio, LocalDateTime fim) {
+        return saleRepository.buscarProdutosMaisVendidos(inicio, fim);
     }
 }

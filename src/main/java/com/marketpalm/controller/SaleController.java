@@ -1,5 +1,6 @@
 package com.marketpalm.controller;
 
+import com.marketpalm.dto.ProdutoMaisVendidoDTO;
 import com.marketpalm.dto.ResumoFinanceiroDTO;
 import com.marketpalm.model.Sale;
 import com.marketpalm.service.SaleService;
@@ -47,5 +48,15 @@ public class SaleController {
 
         ResumoFinanceiroDTO resumo = saleService.obterResumoFinanceiro(inicio, fim);
         return ResponseEntity.ok(resumo);
+    }
+
+    // GET http://localhost:8080/api/sales/produtos-mais-vendidos?dias=30
+    @GetMapping("/produtos-mais-vendidos")
+    public ResponseEntity<List<ProdutoMaisVendidoDTO>> buscarProdutosMaisVendidos(@RequestParam(defaultValue = "30") int dias) {
+        LocalDateTime fim = LocalDateTime.now();
+        LocalDateTime inicio = fim.minusDays(dias);
+
+        List<ProdutoMaisVendidoDTO> ranking = saleService.obterProdutosMaisVendidos(inicio, fim);
+        return ResponseEntity.ok(ranking);
     }
 }
