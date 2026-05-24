@@ -1,5 +1,6 @@
 package com.marketpalm.service;
 
+import com.marketpalm.dto.ResumoFinanceiroDTO;
 import com.marketpalm.model.Sale;
 import com.marketpalm.repository.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,22 @@ public class SaleService {
         return vendas.stream()
                 .map(Sale::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public ResumoFinanceiroDTO obterResumoFinanceiro(LocalDateTime inicio, LocalDateTime fim) {
+        BigDecimal faturamento = saleRepository.calcularFaturamentoPeriodo(inicio, fim);
+        Long totalVendas = saleRepository.contarVendasPeriodo(inicio, fim);
+
+        // Trata o caso de não haver vendas no período para não dar erro de NullPointerException
+        if (faturamento == null) faturamento = BigDecimal.ZERO;
+        if (totalVendas == null) totalVendas = 0L;
+
+        // Cálculo do Ticket Médio: Faturamento / Total de Vendas
+        BigDecimal ticketMedio = BigDecimal.ZERO;
+        if (totalVendas > 0) {
+            ticketMedio = faturamento.divide(BigDecimal.valueOf(totalVendas), 2, java.math.RoundingMode.HALF_UP);
+        }
+
+        return new ResumoFinanceiroDTO(faturamento, totalVendas, ticketMedio);
     }
 }

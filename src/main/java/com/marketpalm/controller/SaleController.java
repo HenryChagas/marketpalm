@@ -1,11 +1,14 @@
 package com.marketpalm.controller;
 
+import com.marketpalm.dto.ResumoFinanceiroDTO;
 import com.marketpalm.model.Sale;
 import com.marketpalm.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -33,5 +36,16 @@ public class SaleController {
     public BigDecimal getFaturamentoPorDia(@RequestParam("dia") String diaStr) {
         java.time.LocalDate data = java.time.LocalDate.parse(diaStr);
         return saleService.calcularTotalVendidoNoDia(data);
+    }
+
+    // GET http://localhost:8080/api/sales/resumo?dias=30
+    @GetMapping("/resumo")
+    public ResponseEntity<ResumoFinanceiroDTO> buscarResumo(@RequestParam(defaultValue = "30") int dias) {
+        // Define o período com base nos dias passados (ex: últimos 30 dias igual ao filtro do TouchPay)
+        LocalDateTime fim = LocalDateTime.now();
+        LocalDateTime inicio = fim.minusDays(dias);
+
+        ResumoFinanceiroDTO resumo = saleService.obterResumoFinanceiro(inicio, fim);
+        return ResponseEntity.ok(resumo);
     }
 }
