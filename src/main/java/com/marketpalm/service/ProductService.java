@@ -2,21 +2,17 @@ package com.marketpalm.service;
 
 import com.marketpalm.model.Category;
 import com.marketpalm.model.Product;
-import com.marketpalm.model.Sale;
 import com.marketpalm.repository.CategoryRepository;
 import com.marketpalm.repository.ProductRepository;
-import com.marketpalm.repository.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
 import java.util.List;
 
 @Service
 public class ProductService {
-    @Autowired
-    private SaleRepository saleRepository;
+
     @Autowired // O Spring injeta o repositório aqui automaticamente
     private ProductRepository productRepository;
     @Autowired
@@ -67,33 +63,6 @@ public class ProductService {
         }
         productRepository.deleteById(id);
     }
-
-    public Sale registrarVenda(String barcode, Integer quantidade) {
-        // 1. Busca o produto e valida estoque (já fizemos isso!)
-        Product product = buscarPorCodigo(barcode);
-
-        if (product.getStock() < quantidade) {
-            throw new RuntimeException("Estoque insuficiente!");
-        }
-
-        // 2. Baixa o estoque do produto
-        product.setStock(product.getStock() - quantidade);
-        productRepository.save(product);
-
-        // 3. Cria o registro da Venda (O Recibo)
-        Sale venda = new Sale();
-        venda.setProduct(product);
-        venda.setQuantity(quantidade);
-        venda.setSaleDate(LocalDateTime.now()); // Pega a hora exata agora
-
-        // Calcula o total: preço do produto * quantidade
-        BigDecimal total = product.getPrice().multiply(new BigDecimal(quantidade));
-        venda.setTotalPrice(total);
-
-        // 4. Salva a venda no banco
-        return saleRepository.save(venda);
-
-        }
 
     public List<Product> listarPorCategoria(Long categoryId) {
         return productRepository.findByCategoryId(categoryId);

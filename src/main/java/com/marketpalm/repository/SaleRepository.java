@@ -25,10 +25,11 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     @Query("SELECT COUNT(s) FROM Sale s WHERE s.saleDate BETWEEN :inicio AND :fim")
     Long contarVendasPeriodo(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 
-    @Query("SELECT new com.marketpalm.dto.ProdutoMaisVendidoDTO(s.product.name, SUM(s.quantity), SUM(s.totalPrice)) " +
-            "FROM Sale s " +
-            "WHERE s.saleDate BETWEEN :inicio AND :fim " +
-            "GROUP BY s.product.name " +
-            "ORDER BY SUM(s.quantity) DESC")
+    // CORRIGIDO: Agora a query navega a partir de ItemVenda (i), juntando com a data da venda (i.venda.saleDate)
+    @Query("SELECT new com.marketpalm.dto.ProdutoMaisVendidoDTO(i.product.name, SUM(i.quantity), SUM(i.precoUnitario * i.quantity)) " +
+            "FROM ItemVenda i " +
+            "WHERE i.venda.saleDate BETWEEN :inicio AND :fim " +
+            "GROUP BY i.product.name " +
+            "ORDER BY SUM(i.quantity) DESC")
     List<ProdutoMaisVendidoDTO> buscarProdutosMaisVendidos(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 }

@@ -34,13 +34,6 @@ public class ProductController {
         return productService.buscarPorCodigo(barcode);
     }
 
-    // Registrar uma venda e gerar recibo: PUT http://localhost:8080/api/products/venda/7891234567890?quantidade=2
-    @PutMapping("/venda/{barcode}")
-    public Sale vender(@PathVariable String barcode, @RequestParam Integer quantidade) {
-        // Agora chamamos o novo método que gera o histórico de venda
-        return productService.registrarVenda(barcode, quantidade);
-    }
-
     // Deletar produto: DELETE http://localhost:8080/api/products/1
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {

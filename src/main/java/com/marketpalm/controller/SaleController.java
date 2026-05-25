@@ -20,6 +20,12 @@ public class SaleController {
     @Autowired
     private SaleService saleService;
 
+    @PostMapping
+    public ResponseEntity<Sale> criarVenda(@RequestBody com.marketpalm.dto.CarrinhoVendaDTO dto) {
+        Sale novaVenda = saleService.realizarVenda(dto);
+        return ResponseEntity.ok(novaVenda);
+    }
+
     @GetMapping
     public List<Sale> listarTodas() {
         return saleService.listarVendas();
