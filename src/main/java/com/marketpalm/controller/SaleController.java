@@ -20,6 +20,7 @@ public class SaleController {
     @Autowired
     private SaleService saleService;
 
+    // Criar Venda: POST http://localhost:8080/api/sales
     @PostMapping
     public ResponseEntity<Sale> criarVenda(@RequestBody com.marketpalm.dto.CarrinhoVendaDTO dto) {
         Sale novaVenda = saleService.realizarVenda(dto);

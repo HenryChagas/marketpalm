@@ -1,5 +1,6 @@
 package com.marketpalm.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -25,5 +26,6 @@ public class Sale {
     // Relacionamento 1:N -> Uma venda tem muitos itens.
     // O cascade garante que quando salvarmos a Venda, o JPA salva os itens automaticamente!
     @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ItemVenda> itens = new ArrayList<>();
 }

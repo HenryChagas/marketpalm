@@ -1,5 +1,6 @@
 package com.marketpalm.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ public class ItemVenda {
     // Relacionamento com a venda mãe
     @ManyToOne
     @JoinColumn(name = "venda_id", nullable = false)
+    @JsonBackReference
     private Sale venda;
 
     @ManyToOne
