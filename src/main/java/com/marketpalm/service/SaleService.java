@@ -1,9 +1,6 @@
 package com.marketpalm.service;
 
-import com.marketpalm.dto.CarrinhoVendaDTO;
-import com.marketpalm.dto.ItemCarrinhoDTO;
-import com.marketpalm.dto.ProdutoMaisVendidoDTO;
-import com.marketpalm.dto.ResumoFinanceiroDTO;
+import com.marketpalm.dto.*;
 import com.marketpalm.model.ItemVenda;
 import com.marketpalm.model.Product;
 import com.marketpalm.model.Sale;
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +24,8 @@ public class SaleService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    // --- Métodos existentes ---
 
     @Transactional
     public Sale realizarVenda(CarrinhoVendaDTO carrinhoDTO) {
@@ -40,20 +40,15 @@ public class SaleService {
             Product produto = productRepository.findById(itemDTO.produtoId())
                     .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + itemDTO.produtoId()));
 
-            // CORREÇÃO 3: Não barra mais a venda! O estoque agora pode ficar negativo se necessário.
-            // CORREÇÃO 2: Alterado de getQuantity() para getStock()
             produto.setStock(produto.getStock() - itemDTO.quantidade());
             productRepository.save(produto);
 
-            // Criando o vínculo do Item da Venda
             ItemVenda item = new ItemVenda();
             item.setVenda(venda);
             item.setProduct(produto);
-            // CORREÇÃO 2: Alterado de itemDTO.quantity() para itemDTO.quantidade()
             item.setQuantity(itemDTO.quantidade());
             item.setPrecoUnitario(produto.getPrice());
 
-            // Calcula o subtotal (Preço * Quantidade)
             BigDecimal subtotal = produto.getPrice().multiply(BigDecimal.valueOf(itemDTO.quantidade()));
             precoTotalCarrinho = precoTotalCarrinho.add(subtotal);
 
@@ -70,13 +65,13 @@ public class SaleService {
         return saleRepository.findAll();
     }
 
-    public List<Sale> listarVendasDoDia(java.time.LocalDate data) {
-        LocalDateTime inicio = data.atStartOfDay(); // 2026-05-10 00:00:00
-        LocalDateTime fim = data.atTime(23, 59, 59); // 2026-05-10 23:59:59
+    public List<Sale> listarVendasDoDia(LocalDate data) {
+        LocalDateTime inicio = data.atStartOfDay();
+        LocalDateTime fim = data.atTime(23, 59, 59);
         return saleRepository.findBySaleDateBetween(inicio, fim);
     }
 
-    public BigDecimal calcularTotalVendidoNoDia(java.time.LocalDate data) {
+    public BigDecimal calcularTotalVendidoNoDia(LocalDate data) {
         List<Sale> vendas = listarVendasDoDia(data);
         return vendas.stream()
                 .map(Sale::getTotalPrice)
@@ -87,11 +82,9 @@ public class SaleService {
         BigDecimal faturamento = saleRepository.calcularFaturamentoPeriodo(inicio, fim);
         Long totalVendas = saleRepository.contarVendasPeriodo(inicio, fim);
 
-        // Trata o caso de não haver vendas no período para não dar erro de NullPointerException
         if (faturamento == null) faturamento = BigDecimal.ZERO;
         if (totalVendas == null) totalVendas = 0L;
 
-        // Cálculo do Ticket Médio: Faturamento / Total de Vendas
         BigDecimal ticketMedio = BigDecimal.ZERO;
         if (totalVendas > 0) {
             ticketMedio = faturamento.divide(BigDecimal.valueOf(totalVendas), 2, java.math.RoundingMode.HALF_UP);
@@ -102,5 +95,64 @@ public class SaleService {
 
     public List<ProdutoMaisVendidoDTO> obterProdutosMaisVendidos(LocalDateTime inicio, LocalDateTime fim) {
         return saleRepository.buscarProdutosMaisVendidos(inicio, fim);
+    }
+
+    // --- Novos métodos para o dashboard ---
+
+    /**
+     * Converte Object[] da native query para VendasPorDiaDTO.
+     * Colunas: [0]=dia_semana (String), [1]=numero_dia (Integer), [2]=total_vendas (BigDecimal)
+     */
+    public List<VendasPorDiaDTO> obterVendasPorDiaSemana(int dias) {
+        LocalDateTime fim = LocalDateTime.now();
+        LocalDateTime inicio = fim.minusDays(dias);
+
+        return saleRepository.buscarVendasPorDiaSemanaRaw(inicio, fim)
+                .stream()
+                .map(row -> new VendasPorDiaDTO(
+                        (String) row[0],
+                        ((Number) row[1]).doubleValue(),
+                        new BigDecimal(row[2].toString())
+                ))
+                .toList();
+    }
+
+    /**
+     * Converte Object[] da native query para VendasPorMesDTO.
+     * Colunas: [0]=mes (Integer), [1]=total_vendas (BigDecimal)
+     */
+    public List<VendasPorMesDTO> obterVendasPorMes(int ano) {
+        return saleRepository.buscarVendasPorMesRaw(ano)
+                .stream()
+                .map(row -> new VendasPorMesDTO(
+                        ((Number) row[0]).doubleValue(),
+                        new BigDecimal(row[1].toString())
+                ))
+                .toList();
+    }
+
+    /**
+     * Converte Object[] da native query para CategoriaMaisVendidaDTO.
+     * Colunas: [0]=nome_categoria (String), [1]=quantidade_vendida (Long), [2]=valor_total_faturado (BigDecimal)
+     */
+    public List<CategoriaMaisVendidaDTO> obterCategoriasMaisVendidas(int dias) {
+        LocalDateTime fim = LocalDateTime.now();
+        LocalDateTime inicio = fim.minusDays(dias);
+
+        return saleRepository.buscarCategoriasMaisVendidasRaw(inicio, fim)
+                .stream()
+                .map(row -> new CategoriaMaisVendidaDTO(
+                        (String) row[0],
+                        ((Number) row[1]).longValue(),
+                        new BigDecimal(row[2].toString())
+                ))
+                .toList();
+    }
+
+    /**
+     * Faturamento do dia atual — KPI "Vendas de hoje".
+     */
+    public BigDecimal obterFaturamentoHoje() {
+        return calcularTotalVendidoNoDia(LocalDate.now());
     }
 }

@@ -1,4 +1,9 @@
 package com.marketpalm.dto;
 
-public record CategoriaMaisVendidaDTO() {
-}
+import java.math.BigDecimal;
+
+public record CategoriaMaisVendidaDTO(
+        String nomeCategoria,
+        Long quantidadeVendida,
+        BigDecimal valorTotalFaturado
+) {}

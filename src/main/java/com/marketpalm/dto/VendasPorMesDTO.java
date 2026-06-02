@@ -1,4 +1,8 @@
 package com.marketpalm.dto;
 
-public record VendasPorMesDTO() {
-}
+import java.math.BigDecimal;
+
+public record VendasPorMesDTO(
+        Double mes,             // 1=Janeiro, 2=Fevereiro, ..., 12=Dezembro (EXTRACT MONTH)
+        BigDecimal totalVendas
+) {}
