@@ -46,17 +46,6 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado com o código: " + barcode));
     }
 
-    public Product baixarEstoque(String barcode, Integer quantidade) {
-        Product product = buscarPorCodigo(barcode); // Reutilizamos a busca que já funciona!
-
-        if (product.getStock() < quantidade) {
-            throw new RuntimeException("Estoque insuficiente para o produto: " + product.getName());
-        }
-
-        product.setStock(product.getStock() - quantidade);
-        return productRepository.save(product);
-    }
-
     public void deletarProduto(Long id) {
         if (!productRepository.existsById(id)) {
             throw new RuntimeException("Não é possível deletar. Produto não encontrado!");

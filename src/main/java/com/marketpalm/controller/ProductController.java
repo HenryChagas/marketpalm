@@ -1,7 +1,6 @@
 package com.marketpalm.controller;
 
 import com.marketpalm.model.Product;
-import com.marketpalm.model.Sale;
 import com.marketpalm.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
