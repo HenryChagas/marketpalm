@@ -23,43 +23,75 @@ public class SecurityConfigurations {
         this.securityFilter = securityFilter;
     }
 
+    // ---------------------------------------------------------------
+    // CADEIA 1: Painel Admin (Thymeleaf) — autenticação por formulário
+    // Aplica APENAS às rotas /admin/**
+    // ---------------------------------------------------------------
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable()) // Desativa proteção contra ataques CSRF (comum em APIs REST)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // API sem estado (Stateless)
-                .authorizeHttpRequests(authorize -> authorize
-                        // Rota de login e cadastro de usuários serão públicas (qualquer um acessa para entrar)
+    public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/admin/**")
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().hasRole("ADMIN")
+                )
+                .formLogin(form -> form
+                        .loginPage("/admin/login")           // Nossa página de login customizada (a criar)
+                        .loginProcessingUrl("/admin/login")  // O Spring processa o POST aqui
+                        .defaultSuccessUrl("/admin/dashboard", true)
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/admin/logout")
+                        .logoutSuccessUrl("/admin/login?logout")
+                        .permitAll()
+                );
+
+        return http.build();
+    }
+
+    // ---------------------------------------------------------------
+    // CADEIA 2: API REST — autenticação stateless via JWT
+    // Aplica às rotas /api/**
+    // ---------------------------------------------------------------
+    @Bean
+    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/api/**")
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authorizeHttpRequests(auth -> auth
+                        // Rotas públicas
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/registrar").permitAll()
 
-                        // Rotas administrativas (Apenas o Dono/Gerente pode mexer no estoque ou ver faturamento)
+                        // Rotas exclusivas do ADMIN
                         .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/categories/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/sales/faturamento").hasRole("ADMIN")
 
-                        // Rotas da Máquininha (Tanto ADMIN quanto USER podem vender ou consultar produtos)
+                        // Rotas do totem (ADMIN e USER)
                         .requestMatchers(HttpMethod.GET, "/api/products/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.PUT, "/api/products/venda/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/api/sales").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/sales/**").hasAnyRole("ADMIN", "USER")
 
-                        // Qualquer outra requisição precisa de pelo menos estar logado
                         .anyRequest().authenticated()
                 )
-                // Adiciona o nosso filtro personalizado antes do filtro padrão do Spring
-                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Criptografia BCrypt para salvar as senhas de forma segura no banco (nunca em texto limpo!)
         return new BCryptPasswordEncoder();
     }
 }
