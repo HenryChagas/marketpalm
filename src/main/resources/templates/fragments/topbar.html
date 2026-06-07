@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<body>
+<header th:fragment="topbar(titulo)" class="topbar">
+    <h1 th:text="${titulo}">Título</h1>
+    <span class="badge-env">Painel Admin</span>
+    <i class="bi bi-bell top-icon ms-auto"></i>
+    <i class="bi bi-person-circle top-icon"></i>
+</header>
+</body>
+</html>

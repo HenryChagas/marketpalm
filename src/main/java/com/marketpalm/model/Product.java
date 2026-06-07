@@ -22,6 +22,10 @@ public class Product {
 
     private Integer stock;
 
+    // Caminho relativo da imagem salva no servidor
+    // Ex: /uploads/imagens/produto-123.jpg
+    private String imagemUrl;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<body>
+<nav th:fragment="sidebar(paginaAtiva)" class="sidebar">
+  <div class="brand">Market<br>Palm 🌴</div>
+
+  <a class="nav-item" th:classappend="${paginaAtiva == 'dashboard'} ? 'active'"
+     th:href="@{/admin/dashboard}">
+    <i class="bi bi-grid-fill"></i>Geral
+  </a>
+  <a class="nav-item" th:classappend="${paginaAtiva == 'vendas'} ? 'active'" href="#">
+    <i class="bi bi-cart3"></i>Vendas
+  </a>
+  <a class="nav-item" th:classappend="${paginaAtiva == 'estoque'} ? 'active'" href="#">
+    <i class="bi bi-box-seam"></i>Estoque
+  </a>
+  <a class="nav-item" th:classappend="${paginaAtiva == 'cadastros'} ? 'active'"
+     th:href="@{/admin/cadastros/produtos}">
+    <i class="bi bi-tags"></i>Cadastros
+  </a>
+  <a class="nav-item" th:classappend="${paginaAtiva == 'seguranca'} ? 'active'" href="#">
+    <i class="bi bi-shield-lock"></i>Segurança
+  </a>
+
+  <a class="nav-item mt-auto" th:href="@{/admin/logout}">
+    <i class="bi bi-box-arrow-right"></i>Sair
+  </a>
+</nav>
+</body>
+</html>

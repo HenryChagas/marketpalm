@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+  <th:block th:fragment="estilos">
+    <style>
+      :root { --mp-primary:#0a2d6e; --mp-accent:#1a73e8; --mp-green:#1db954; --mp-sidebar:#0d1b3e; }
+      body { background:#f0f4f8; margin:0; font-family:'Segoe UI',sans-serif; }
+      .sidebar { width:72px; min-height:100vh; background:var(--mp-sidebar); position:fixed; top:0; left:0;
+          display:flex; flex-direction:column; align-items:center; padding-top:16px; z-index:100; }
+      .sidebar .brand { color:var(--mp-green); font-size:11px; font-weight:700; text-align:center;
+          margin-bottom:24px; line-height:1.2; }
+      .sidebar .nav-item { width:100%; display:flex; flex-direction:column; align-items:center;
+          padding:10px 0; color:#8a9bb5; font-size:10px; cursor:pointer; transition:all .2s; text-decoration:none; }
+      .sidebar .nav-item i { font-size:20px; margin-bottom:3px; }
+      .sidebar .nav-item:hover, .sidebar .nav-item.active { color:#fff; background:rgba(255,255,255,0.08); }
+      .sidebar .nav-item.active { border-left:3px solid var(--mp-green); }
+      .topbar { margin-left:72px; background:var(--mp-primary); color:#fff; height:52px;
+          display:flex; align-items:center; padding:0 24px; position:sticky; top:0; z-index:99; gap:12px; }
+      .topbar h1 { font-size:18px; font-weight:600; margin:0; flex:1; }
+      .topbar .badge-env { background:rgba(255,255,255,0.15); padding:3px 10px; border-radius:20px; font-size:12px; }
+      .topbar .top-icon { color:rgba(255,255,255,0.7); font-size:18px; cursor:pointer; }
+      .topbar .top-icon:hover { color:#fff; }
+      .main { margin-left:72px; padding:24px; }
+      .section-card { background:#fff; border-radius:10px; padding:20px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+      .ranking-table th { font-size:12px; color:#555; font-weight:600; border-bottom:2px solid #e8edf3; }
+      .ranking-table td { font-size:13px; border-bottom:1px solid #f0f4f8; vertical-align:middle; }
+      .ranking-table tr:hover td { background:#f7faff; }
+    </style>
+  </th:block>
+</head>
+</html>
