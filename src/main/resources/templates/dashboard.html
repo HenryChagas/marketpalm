@@ -6,55 +6,42 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <th:block th:replace="~{fragments/styles :: estilos}"></th:block>
+    <style>
+        .kpi-card { background:var(--mp-accent); color:#fff; border-radius:10px; padding:18px 20px; height:100%; }
+        .kpi-card.green  { background:#0d7040; }
+        .kpi-card.navy   { background:var(--mp-primary); }
+        .kpi-card.teal   { background:#0b7285; }
+        .kpi-card .label { font-size:12px; opacity:.8; margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+        .kpi-card .value { font-size:28px; font-weight:700; line-height:1; }
+        .section-title   { font-size:14px; font-weight:600; color:var(--mp-accent); margin-bottom:4px; }
+        .section-sub     { font-size:11px; color:#888; margin-bottom:16px; }
+        .cat-bar         { height:6px; border-radius:3px; background:var(--mp-green); }
+        .cat-name        { font-size:13px; font-weight:500; }
+        .cat-val         { font-size:13px; color:#444; }
+        .period-tabs .btn { font-size:12px; border-radius:20px; padding:4px 14px; }
+        .period-tabs .btn.active { background:var(--mp-accent); color:#fff; border-color:var(--mp-accent); }
+    </style>
 </head>
-<body>
+<body class="bg-light">
 
-<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
-<nav class="sidebar">
-    <div class="brand">Market<br>Palm 🌴</div>
+<div th:replace="~{fragments/sidebar :: sidebar('dashboard')}"></div>
 
-    <a class="nav-item active" th:href="@{/admin/dashboard}">
-        <i class="bi bi-grid-fill"></i>Geral
-    </a>
-    <a class="nav-item" href="#">
-        <i class="bi bi-cart3"></i>Vendas
-    </a>
-    <a class="nav-item" href="#">
-        <i class="bi bi-box-seam"></i>Estoque
-    </a>
-    <a class="nav-item" href="#">
-        <i class="bi bi-tags"></i>Cadastros
-    </a>
-    <a class="nav-item" href="#">
-        <i class="bi bi-shield-lock"></i>Segurança
-    </a>
-
-    <a class="logout-btn nav-item mt-auto" th:href="@{/admin/logout}" title="Sair">
-        <i class="bi bi-box-arrow-right"></i>
-        <span>Sair</span>
-    </a>
-</nav>
-
-<!-- ═══════════════════ TOPBAR ═══════════════════ -->
+<!-- Topbar customizada com filtro de período -->
 <header class="topbar">
     <h1>Dashboard</h1>
     <span class="badge-env">Painel Admin</span>
-
-    <!-- Filtro de período -->
     <div class="period-tabs d-flex gap-1 ms-3">
         <a th:href="@{/admin/dashboard(dias=7)}"
-           th:classappend="${diasFiltro == 7} ? 'active'" class="btn btn-outline-light btn-sm">7 dias</a>
+           th:classappend="${diasFiltro == 7} ? ' active'" class="btn btn-outline-light btn-sm">7 dias</a>
         <a th:href="@{/admin/dashboard(dias=15)}"
-           th:classappend="${diasFiltro == 15} ? 'active'" class="btn btn-outline-light btn-sm">15 dias</a>
+           th:classappend="${diasFiltro == 15} ? ' active'" class="btn btn-outline-light btn-sm">15 dias</a>
         <a th:href="@{/admin/dashboard(dias=30)}"
-           th:classappend="${diasFiltro == 30} ? 'active'" class="btn btn-outline-light btn-sm">30 dias</a>
+           th:classappend="${diasFiltro == 30} ? ' active'" class="btn btn-outline-light btn-sm">30 dias</a>
     </div>
-
-    <i class="bi bi-bell top-icon ms-3"></i>
+    <i class="bi bi-bell top-icon ms-auto"></i>
     <i class="bi bi-person-circle top-icon"></i>
 </header>
 
-<!-- ═══════════════════ CONTEÚDO ═══════════════════ -->
 <main class="main">
 
     <!-- KPIs -->
@@ -85,7 +72,7 @@
         </div>
     </div>
 
-    <!-- Gráficos: dia da semana + mensal -->
+    <!-- Gráficos -->
     <div class="row g-3 mb-4">
         <div class="col-md-5">
             <div class="section-card">
@@ -97,8 +84,7 @@
         <div class="col-md-7">
             <div class="section-card">
                 <div class="section-title">Crescimento mensal</div>
-                <div class="section-sub"
-                     th:text="${anoAtual} + ' vs ' + ${anoAtual - 1}">2026 vs 2025</div>
+                <div class="section-sub" th:text="${anoAtual} + ' vs ' + ${anoAtual - 1}">2026 vs 2025</div>
                 <canvas id="chartMes" height="180"></canvas>
             </div>
         </div>
@@ -152,7 +138,7 @@
                         <span class="cat-val"
                               th:text="'R$ ' + ${#numbers.formatDecimal(cat.valorTotalFaturado, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                     </div>
-                    <div style="background:#e8edf3; border-radius:3px; height:6px;">
+                    <div style="background:#e8edf3;border-radius:3px;height:6px;">
                         <div class="cat-bar"
                              th:style="'width: ' + ${#numbers.formatDecimal(cat.valorTotalFaturado.multiply(new java.math.BigDecimal('100')).divide(maxCategoria, 0, T(java.math.RoundingMode).HALF_UP), 1, 'DEFAULT', 0, 'DEFAULT')} + '%'">
                         </div>
@@ -164,7 +150,6 @@
 
 </main>
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script th:inline="javascript">
     const labelsDia  = /*[[${labelsDia}]]*/  '';
@@ -175,7 +160,6 @@
 
     const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
-    // Gráfico: dia da semana
     if (labelsDia) {
         new Chart(document.getElementById('chartDia'), {
             type: 'bar',
@@ -196,7 +180,6 @@
         });
     }
 
-    // Gráfico: crescimento mensal
     new Chart(document.getElementById('chartMes'), {
         type: 'bar',
         data: {
@@ -223,7 +206,6 @@
         }
     });
 </script>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
